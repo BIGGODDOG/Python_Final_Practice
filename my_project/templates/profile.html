@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<h2>Личный кабинет</h2>
+<h3>Сохраненные статьи</h3>
+<ul>
+    {% for article in saved_articles %}
+    <li>
+        <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+        <p>Автор: {{ article.author }}</p>
+    </li>
+    {% empty %}
+    <li>Нет сохраненных статей.</li>
+    {% endfor %}
+</ul>
+
+<h3>Комментарии</h3>
+<ul>
+    {% for comment in user.profile.comments.all %}
+    <li>
+        <p>{{ comment.text }}</p>
+        <p>Автор: {{ comment.author_id.user.username }} | Дата: {{ comment.date_published }}</p>
+        <a href="{% url 'edit_comment' comment.id %}">Редактировать</a> |
+        <a href="{% url 'delete_comment' comment.id %}">Удалить</a>
+    </li>
+    {% empty %}
+    <li>Нет оставленных комментариев.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Создание статьи{% endblock %}
+
+{% block content %}
+<h2>{% if article %}Редактировать{% else %}Создать{% endif %} статью</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+</form>
+
+<a href="{% url 'article_list' %}">Назад к списку статей</a>
+{% endblock %}

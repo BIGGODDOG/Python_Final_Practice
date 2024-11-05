@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Сохраненные статьи</h1>
+  {% if saved_articles %}
+    <ul>
+      {% for saved_article in saved_articles %}
+        <li>
+          <a href="{% url 'article_detail' saved_article.article.id %}">{{ saved_article.article.title }}</a>
+          <form method="post" action="{% url 'remove_saved_article' saved_article.id %}">
+            {% csrf_token %}
+            <button type="submit">Удалить</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>У вас нет сохраненных статей.</p>
+  {% endif %}
+{% endblock %}

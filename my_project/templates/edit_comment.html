@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Редактировать комментарий к "{{ article.title }}"</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Обновить</button>
+  </form>
+  <a href="{% url 'article_detail' article.id %}">Назад к статье</a>
+{% endblock %}

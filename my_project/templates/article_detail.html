@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ article.title }}</h1>
+<p>Автор: {{ article.author.username }}</p>
+<p>Дата публикации: {{ article.created_at }}</p>
+{% if article.image %}
+<img src="{{ article.image.url }}" alt="{{ article.title }}" style="max-width: 100%; height: auto;">
+{% endif %}
+<p>{{ article.content }}</p>
+
+
+{% if user.is_authenticated %}
+<form action="{% url 'save_article' article.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">Добавить в избранное</button>
+</form>
+{% else %}
+<p><a href="{% url 'login' %}">Войдите</a>, чтобы добавлять статьи в избранное.</p>
+{% endif %}
+
+<h2>Комментарии:</h2>
+{% for comment in article.comments.all %}
+<div>
+    <p>{{ comment.author_id.user.username }}: {{ comment.text }} <small>({{ comment.date_published }})</small></p>
+    <button class="like-btn" data-comment-id="{{ comment.id }}">👍 {{ comment.likes }}</button>
+    <button class="dislike-btn" data-comment-id="{{ comment.id }}">👎 {{ comment.dislikes }}</button>
+</div>
+{% endfor %}
+
+<h3>Добавить комментарий</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }} 
+    <button type="submit">Добавить комментарий</button>
+</form>
+
+<script>
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const commentId = this.dataset.commentId;
+            fetch(`/comment/like/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.textContent = `👍 ${data.likes}`;
+                });
+        });
+    });
+
+    document.querySelectorAll('.dislike-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const commentId = this.dataset.commentId;
+            fetch(`/comment/dislike/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.textContent = `👎 ${data.dislikes}`;
+                });
+        });
+    });
+</script>
+{% endblock %}
